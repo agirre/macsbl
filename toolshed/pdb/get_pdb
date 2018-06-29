@@ -1,0 +1,10 @@
+source /Applications/ccp4-7.0/setup-scripts/ccp4.setup-sh
+mkdir `echo $1 | tr /A-Z/ /a-z/` 
+cd `echo $1 | tr /A-Z/ /a-z/`
+wget https://files.rcsb.org/download/`echo $1 | tr /a-z/ /A-Z/`.pdb
+wget https://files.rcsb.org/download/`echo $1 | tr /a-z/ /A-Z/`-sf.cif
+mv `echo $1 | tr /a-z/ /A-Z/`.pdb `echo $1 | tr /A-Z/ /a-z/`.pdb
+mv `echo $1 | tr /a-z/ /A-Z/`-sf.cif `echo $1 | tr /A-Z/ /a-z/`.cif
+cif2mtz hklin `echo $1 | tr /A-Z/ /a-z/`.cif hklout `echo $1 | tr /A-Z/ /a-z/`.mtz << EOF
+EOF
+
