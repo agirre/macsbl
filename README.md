@@ -12,3 +12,11 @@ To do:
 
 - scripts for mirroring PDB & PDB_REDO
 - scripts for parallel-running binaries on mirrors
+
+
+Cloning instructions (as dest directory won't be empty):
+
+cd
+git clone https://github.com/agirre/macsbl.git
+cp -rf macsbl/.git .
+git checkout -f master
