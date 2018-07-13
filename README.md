@@ -17,6 +17,9 @@ To do:
 Cloning instructions (as dest directory won't be empty):
 
 cd
+
 git clone https://github.com/agirre/macsbl.git
+
 cp -rf macsbl/.git .
+
 git checkout -f master
