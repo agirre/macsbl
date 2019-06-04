@@ -1,0 +1,2589 @@
+<?xml version="1.0"?><!--*- mode: nxml; indent-tabs-mode: nil -*-->
+<!DOCTYPE moduleset SYSTEM "moduleset.dtd">
+<?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
+<!--
+     Syntax reference:
+     http://developer.gnome.org/jhbuild/unstable/moduleset-syntax.html.en
+ -->
+<moduleset>
+  <repository type="bzr" name="oisin" default="yes"
+              href="http://fg.oisin.rc-harwell.ac.uk/bzr/"
+              trunk-template="%(module)s/trunk/"
+              branches-template="%(module)s/%(branch)s/"/>
+  <repository type="tarball" name="ccp4-tarballs"
+              href="ftp://ftp.ccp4.ac.uk/opensource/"/>
+  <repository type="tarball" name="files"
+              href="http://devtools.fg.oisin.rc-harwell.ac.uk/files/"/>
+  <repository type="tarball" name="sf"
+              href="http://downloads.sourceforge.net/"/>
+  <repository type="tarball" name="github-zip" href="https://github.com/"/>
+  <repository type="git" name="github" href="https://github.com/"/>
+  <repository type="git" name="gitlab" href="https://gitlab.com/"/>
+
+  <custom id="ccp4-base" install_to="* ./">
+    <branch/>
+  </custom>
+
+  <autotools id="mmdb">
+    <branch/>
+  </autotools>
+
+  <autotools id="mmdb2">
+    <branch/>
+  </autotools>
+
+  <autotools id="libccp4" autogenargs="--datadir=${prefix}/lib/data">
+    <branch/>
+    <dependencies>
+      <dep package="ccp4-base"/>
+      <dep package="mmdb2"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="ccif" autogenargs="--with-ccp4">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+    </dependencies>
+    <after>
+      <dep package="libgnurx"/> <!-- may be needed on Windows only -->
+    </after>
+  </autotools>
+
+  <autotools id="ssm" autogenargs="--enable-ccp4">
+    <branch/>
+    <dependencies>
+      <dep package="mmdb2"/>
+      <dep package="libccp4"/>
+    </dependencies>
+  </autotools>
+
+  <cmake id="gesamt" cmakeargs="-DUSE_CCP4=1">
+    <branch/>
+    <dependencies>
+      <dep package="mmdb2"/>
+      <dep package="libccp4"/>
+      <dep package="rvapi"/>
+    </dependencies>
+  </cmake>
+
+  <autotools id="ccp4srs">
+    <branch/>
+    <dependencies>
+      <dep package="mmdb2"/>
+      <dep package="zlib"/>
+      <dep package="ccp4srs-data"/>
+    </dependencies>
+  </autotools>
+
+  <custom id="ccp4srs-data"
+          install_to="* share/ccp4srs/">
+    <branch repo="ccp4-tarballs" version="20180406"
+            module="ccp4srs-data-${version}.tar.gz"/>
+  </custom>
+
+  <cmake id="qtlibs">
+    <branch/>
+    <dependencies>
+    </dependencies>
+  </cmake>
+
+  <!-- special case, building pisa without qtpisa -->
+  <cmake id="pisa-no-qt" cmakeargs="-DUSE_QT=OFF">
+    <branch module="pisa"/>
+    <dependencies>
+      <dep package="mmdb2"/>
+      <dep package="ssm"/>
+      <dep package="libccp4"/>
+      <dep package="ccp4srs"/>
+      <dep package="ccp4srs-data"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="pisa">
+    <branch/>
+    <dependencies>
+      <dep package="mmdb2"/>
+      <dep package="ssm"/>
+      <dep package="libccp4"/>
+      <dep package="ccp4srs"/>
+      <dep package="ccp4srs-data"/>
+      <dep package="qtlibs"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="refmac">
+    <branch branch="5.8" checkoutdir="refmac5.8"/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="lapack"/>
+      <dep package="fftw2"/>
+    </dependencies>
+  </cmake>
+
+  <custom id="monomers"
+      install_to="* lib/data/monomers/">
+    <branch/>
+    <!--
+    <branch repo="refmac_experimental" version="5.38"
+            module="refmac_dictionary_v${version}.tar.gz"
+            checkoutdir="refmac_dictionary_v${version}"/>
+    -->
+  </custom>
+
+  <cmake id="ccp4-progs">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="ccif"/>
+      <dep package="mmdb2"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="amore-rs">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="ccif"/>
+      <dep package="mmdb2"/>
+    </dependencies>
+  </cmake>
+
+  <custom id="examples"
+          install_to="* examples/">
+    <branch light="yes"/> <!-- whole repo is big, 280MB -->
+  </custom>
+
+  <custom id="documentation"
+          install="./installer.sh ${dest}">
+    <branch/>
+  </custom>
+
+  <custom id="ccp4-lib-data" install_to="* lib/data/">
+    <branch repo="files" module="ccp4-lib-data-6.5.0.tar.gz"
+            size="15269420" version="6.5.0"/>
+  </custom>
+
+  <custom id="test-sys">
+    <branch/>
+  </custom>
+
+  <cmake id="ccp4i">
+    <branch/>
+  </cmake>
+
+  <custom id="imosflm" install_to="* share/ccp4i/imosflm/">
+    <branch/>
+  </custom>
+
+  <cmake id="hklfile">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="clipper"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="viewhkl">
+    <branch/>
+    <dependencies>
+      <dep package="mmdb2"/>
+      <dep package="libccp4"/>
+      <dep package="clipper"/>
+      <dep package="qtlibs"/>
+      <dep package="hklfile"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="qtrview">
+    <branch/>
+    <dependencies>
+      <dep package="qtlibs"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="jsrview">
+    <branch/>
+    <dependencies>
+      <dep package="qtlibs"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="rvapi">
+    <branch/>
+    <dependencies/>
+    <after>
+      <dep package="jsrview"/>
+    </after>
+  </cmake>
+
+  <cmake id="setup">
+    <branch/>
+    <dependencies>
+      <dep package="qtlibs"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="mrbump">
+    <branch/>
+    <dependencies>
+      <dep package="hmmer"/>
+      <dep package="mafft"/>
+      <dep package="clustalw2"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="dssp">
+    <branch/>
+    <dependencies>
+      <dep package="boost"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="xssp" cmakeargs="-DUSE_COMPRESSION=ON" >
+    <branch repo="github-zip"
+        module="cmbi/xssp/archive/${version}.tar.gz"
+        version="3.0.0" size="168057"
+        checkoutdir="xssp-${version}">
+      <patch file="xssp.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="boost"/>
+      <dep package="zlib"/>
+      <dep package="bzip2"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="tgutils">
+    <branch/>
+    <dependencies>
+      <dep package="clipper"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="dimple">
+    <!-- directly from git repo:
+    <branch repo="github" module="ccp4/dimple.git"/>
+    or from ccp4 bzr repo: -->
+    <branch/>
+    <dependencies>
+      <dep package="clipper"/>
+      <dep package="mmdb2"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="ample">
+    <branch repo="github-zip"
+            version="1.4.4"
+            module="rigdenlab/ample/archive/${version}.zip"
+            checkoutdir="ample-${version}">
+    </branch>
+    <dependencies>
+      <dep package="numpy"/>
+      <dep package="conkit"/>
+      <dep package="matplotlib"/>
+      <dep package="biopython"/>
+      <dep package="pandas"/>
+      <dep package="theseus"/>
+      <dep package="spicker"/>
+      <dep package="mrbump"/>
+    </dependencies>
+  </cmake>
+
+  <autotools id="swig" autogenargs="--bindir=${prefix}/devbin --without-pcre --disable-ccache --without-ocaml"
+    autogen-sh="configure">
+    <branch repo="sf" module="swig/swig-${version}.tar.gz"
+            version="3.0.7" size="5923046"/>
+  </autotools>
+
+  <cmake id="ccp4mg">
+    <branch branch="ccp4"/>
+    <dependencies>
+      <dep package="clipper"/>
+      <dep package="hklfile"/>
+      <dep package="ssm"/>
+      <dep package="mmdb2"/>
+      <dep package="libccp4"/>
+      <dep package="ccp4srs"/>
+      <dep package="pyqt4"/>
+      <dep package="rdkit"/>
+      <!-- below are runtime dependencies, kind of optional -->
+      <dep package="suds"/>
+      <dep package="lxml"/>
+      <dep package="matplotlib"/>
+      <dep package="pixie"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="ccp4i2">
+    <branch/>
+    <dependencies>
+    <dep package="psutil"/>
+    </dependencies>
+  </cmake>
+
+  <custom id="jligand"
+          build="make" clean="make clean"
+          install_to="JLigand.jar bin/, jligand bin/">
+    <branch/>
+  </custom>
+
+  <cmake id="molrep">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="sfcheck">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="procheck">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="scala">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="lapack"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="dm21">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="ccif"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="ccp4-deprecated">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="ccif"/>
+      <dep package="lapack"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="edstats">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+    </dependencies>
+  </cmake>
+
+  <autotools id="mosflm" skip-autogen="never"
+             autogenargs="--with-ccp4-prefix=${prefix}"
+             supports-non-srcdir-builds="no" makeargs="-j1 clean all">
+  <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="xdl-view"/>
+    </dependencies>
+  </autotools>
+
+  <!-- requires libxt-dev/libXt-devel -->
+  <autotools id="xdl-view" autogen-sh="src/configure">
+    <branch/>
+  </autotools>
+
+  <cmake id="hklview">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="xdl-view"/>
+    </dependencies>
+  </cmake>
+
+  <autotools id="jwc-c">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="jwc-f">
+    <dependencies>
+      <dep package="jwc-c"/>
+      <dep package="libccp4"/>
+    </dependencies>
+    <branch/>
+  </autotools>
+
+  <cmake id="rotgen">
+    <branch/>
+    <dependencies>
+      <dep package="jwc-f"/>
+      <dep package="xdl-view"/>
+    </dependencies>
+  </cmake>
+
+  <custom id="balbes-pipeline" install_to="README.USAGE BALBES/, Package/* BALBES/">
+    <branch/>
+  </custom>
+
+  <custom id="balbesdb" install_to="Package/* BALBES/">
+    <branch/>
+  </custom>
+
+  <autotools id="dl-laue">
+    <branch branch="laue/trunk"/>
+  </autotools>
+
+  <custom id="ccp4dispatchers"
+          install_to="releaseme/* libexec/">
+    <branch/>
+  </custom>
+
+  <custom id="devtools"> <!-- only for use in bundling script -->
+    <branch/>
+  </custom>
+
+  <cmake id="ccp4-core"> <!-- not used anymore -->
+    <branch branch="old-trunk" light="yes"/>
+  </cmake>
+
+  <autotools id="clipper" autogen-sh="configure"
+      autogenargs="--enable-ccp4 --enable-mmdb --enable-cif --enable-minimol">
+    <branch/>
+    <dependencies>
+      <dep package="mmdb2"/>
+      <dep package="libccp4"/>
+      <dep package="fftw2"/>
+    </dependencies>
+  </autotools>
+
+  <cmake id="clipper-python">
+    <branch branch="trunk"/>
+    <dependencies>
+      <dep package="lxml"/>
+      <dep package="libccp4"/>
+      <dep package="clipper"/>
+      <dep package="numpy"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="ccp4srs-python">
+    <branch branch="trunk"/>
+    <dependencies>
+      <dep package="ccp4srs"/>
+    </dependencies>
+  </cmake>
+
+  <!-- cctbx w/ phaser (phaser can be build only as cctbx subdirectory) -->
+  <custom id="cctbx-phaser"
+          configure="sh ${srcdir}/autogen.sh ${prefix} ${libdir}"
+          build="${}" install="${}" clean="${}"
+          supports-non-srcdir-builds="yes">
+    <branch repo="files" version="latest"
+            module="cctbx-phaser-dials-molprobity-${version}.tar.gz"
+            checkoutdir="cctbx-phaser" >
+      <patch file="cctbx-autogen.patch" strip="0" />
+      <patch file="cctbx-no-unroll.patch" strip="0" />
+      <patch file="cctbx-ldflags.patch" strip="0" />
+      <patch file="cctbx-ann-mingw.patch" strip="0" />
+      <patch file="cctbx-icc.patch" strip="0" />
+      <patch file="cctbx-system-boost.patch" strip="0" />
+      <patch file="cctbx-xia2-nprocs.patch" strip="0" />
+      <patch file="cctbx-dxtbx-SConscript.patch" strip="0" />
+      <patch file="cctbx-cbf-context.patch" strip="0" />
+      <patch file="cctbx-phaser-mingw.patch" strip="0" />
+      <patch file="cctbx-python-framework.patch" strip="0" />
+      <patch file="cctbx-dials-SConscript.patch" strip="0" />
+      <patch file="cctbx-molprobity.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="boost"/>
+      <dep package="hdf5"/>
+      <dep package="h5py"/>
+      <dep package="jinja2"/>
+      <dep package="wxpython"/>
+      <dep package="pillow"/>
+      <dep package="orderedset"/>
+      <dep package="tabulate" />
+      <dep package="docutils"/>
+      <dep package="six"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </custom>
+
+  <repository type="tarball" name="pre_ftp"
+              href="ftp://ftp.mrc-lmb.cam.ac.uk/pub/pre/"/>
+  <cmake id="pointless">
+    <branch light="yes"/>
+    <dependencies>
+      <dep package="clipper"/>
+      <dep package="libccp4"/>
+      <dep package="cctbx-phaser"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="aimless">
+    <branch/>
+    <dependencies>
+      <dep package="clipper"/>
+      <dep package="libccp4"/>
+      <dep package="cctbx-phaser"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="feckless">
+    <branch/>
+    <dependencies>
+      <dep package="clipper"/>
+      <dep package="libccp4"/>
+      <dep package="cctbx-phaser"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="clipper-progs">
+    <branch/>
+    <dependencies>
+      <dep package="clipper"/>
+      <dep package="libccp4"/>
+    </dependencies>
+  </cmake>
+
+  <autotools id="cprodrg">
+    <branch/>
+    <dependencies>
+      <dep package="zlib"/>
+      <dep package="libccp4"/>
+    </dependencies>
+  </autotools>
+
+  <cmake id="prosmart">
+    <branch/>
+    <dependencies>
+      <dep package="mmdb2"/>
+    </dependencies>
+  </cmake>
+
+  <custom id="restraint-valid">
+    <branch/>
+  </custom>
+
+  <cmake id="acedrg">
+    <branch light="yes"/>
+    <dependencies>
+       <dep package="rdkit"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="libg">
+    <branch/>
+  </cmake>
+
+  <cmake id="privateer">
+    <branch/>
+    <dependencies>
+      <dep package="clipper"/>
+      <dep package="ccp4srs"/>
+    </dependencies>
+  </cmake>
+
+  <autotools id="rapper">
+    <branch repo="files" module="rapper_ccp4-${version}.tar.bz2"
+            size="11330639" version="1.0b"/>
+    <dependencies>
+      <dep package="libxml2"/>
+      <dep package="gc"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="diff-image">
+    <branch/>
+    <dependencies>
+      <dep package="libjpeg"/>
+    </dependencies>
+    <after>
+      <dep package="tcltk84"/>
+    </after>
+  </autotools>
+
+  <autotools id="ccp4mapwish">
+    <branch/>
+    <dependencies>
+      <dep package="libccp4"/>
+    </dependencies>
+    <after>
+      <!-- it requires Tcl, but on Windows Tcl must be installed manually -->
+      <dep package="tcltk84"/>
+    </after>
+  </autotools>
+
+  <cmake id="crank2" cmakeargs="-DCMAKE_BUILD_TYPE=None">
+    <branch module="crank">
+      <patch file="crank2-prasa-omp.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="libccp4"/>
+      <dep package="clipper"/>
+      <dep package="lapack"/>
+      <!--<dep package="rvapi"/>-->
+    </dependencies>
+  </cmake>
+
+  <cmake id="blend">
+    <branch/>
+    <dependencies>
+      <dep package="clipper"/>
+      <dep package="cctbx-phaser"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="chooch">
+    <branch/>
+    <dependencies>
+      <dep package="gsl"/>
+      <dep package="plplot"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="whatcheck" cmakeargs="-DCMAKE_Fortran_FLAGS='-DBSLASH1' -DCMAKE_C_FLAGS='-DCTEXT'" >
+    <branch repo="files" module="whatcheck${version}.tar.bz2"
+            checkoutdir="whatcheck"
+            size="106278030" version="15">
+      <patch file="whatcheck-cmake.patch" strip="0" />
+    </branch>
+  </cmake>
+
+  <cmake id="spicker">
+    <branch/>
+  </cmake>
+
+  <cmake id="prelyscar">
+    <branch/>
+  </cmake>
+
+  <repository type="tarball" name="theseus3d"
+              href="http://www.theseus3d.org/src/"/>
+  <cmake id="theseus">
+    <branch repo="files" module="theseus_${version}.tar.gz" version="3.3.0"
+            size="22548124" checkoutdir="theseus_${version}">
+      <patch file="theseus.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="gsl"/>
+    </dependencies>
+  </cmake>
+
+  <!-- Unix-only (relies on shell-scripting inside system() call) -->
+  <!-- <repository type="tarball" name="pdb-extract"
+              href="http://sw-tools.pdb.org/apps/PDB_EXTRACT/"/> -->
+  <custom id="pdb-extract" build="make" clean="make clean"
+                           install_to="bin/* bin/">
+    <!-- <branch module="pdb-extract-v3.11-prod-src.tar.gz" repo="pdb-extract"
+               version="3.11"/> - original tarball doesn't compile of-of-box
+    -->
+    <branch/>
+  </custom>
+
+  <repository type="tarball" name="hmmer"
+              href="http://eddylab.org/software/"/>
+  <autotools id="hmmer" autogenargs="--bindir=${prefix}/libexec --enable-sse">
+    <branch repo="hmmer" module="hmmer3/3.1b1/hmmer-3.1b1.tar.gz"
+            version="3.1b1" size="5778584"/>
+  </autotools>
+
+  <repository type="tarball" name="clustal"
+              href="http://www.clustal.org/download/current/"/>
+  <autotools id="clustalw2" autogenargs="--bindir=${prefix}/libexec">
+    <branch repo="clustal" module="clustalw-2.1.tar.gz"
+            version="2.1" size="350761">
+      <patch file="clustalw2-time.patch" strip="0" />
+      <patch file="clustalw2-string.patch" strip="0" />
+    </branch>
+  </autotools>
+
+  <repository type="tarball" name="mafft"
+              href="http://mafft.cbrc.jp/alignment/software/"/>
+  <!-- "make -e" overrides CC and CFLAGS in Makefile 
+       (we could do "sed -i 's/^C/#C/' core/Makefile" instead).
+       sed hack is needed because BINDIR is the same as  LIBDIR
+  -->
+  <custom id="mafft"
+      configure="sed -i.bak 's/^rm.*ln -s.*[.]/true/' core/Makefile"
+      build="${} -e -C core -j1 clean all"
+      install="make -C core install DESTDIR=${destdir} PREFIX=${prefix} LIBDIR=${prefix}/libexec BINDIR=${prefix}/libexec"
+      clean="make -C core clean">
+    <branch repo="mafft" module="mafft-${version}-without-extensions-src.tgz"
+            checkoutdir="mafft-${version}-without-extensions"
+            version="7.245" size="397503"/>
+  </custom>
+
+<!--
+install intltool libfontconfig1-dev libxrender-dev
+(libxinerama-dev)
+(glut.m4 wants libxmu-dev)
+-->
+  <repository type="tarball" name="mrc_coot"
+              href="http://www2.mrc-lmb.cam.ac.uk/personal/pemsley/coot/"/>
+  <custom id="coot-reference-structures"
+          install_to="* share/coot/reference-structures/">
+    <branch repo="mrc_coot" module="dependencies/reference-structures.tar.gz"
+            version="0" size="6728787"/>
+  </custom>
+  <autotools id="guile-gui">
+    <branch repo="mrc_coot" module="dependencies/guile-gui-0.3.tar.gz"
+            version="0.3" size="68535"/>
+    <dependencies>
+      <dep package="guile-gtk"/>
+    </dependencies>
+  </autotools>
+
+  <!-- not really needed, nor working -->
+  <autotools id="greg">
+    <branch repo="mrc_coot" module="dependencies/greg-2.0.0-pe.tar.gz"
+            version="2.0.0" size="453770"/>
+    <dependencies>
+      <dep package="guile"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="coot" autogen-sh="configure"
+             autogenargs="--with-enhanced-ligand-tools --with-guile --with-python --with-pygtk --with-goocanvas-prefix=${prefix} --with-guile-gtk --includedir=${prefix}/include/coot RDKIT_CXXFLAGS=-I${prefix}/include/rdkit RDKIT_LIBS='-lRDKitDescriptors -lRDKitSubgraphs -lRDKitPartialCharges -lRDKitForceFieldHelpers -lRDKitForceField -lRDKitMolChemicalFeatures -lRDKitSubstructMatch -lRDKitOptimizer -lRDKitDepictor -lRDKitFileParsers -lRDKitRDGeometryLib -lRDKitGraphMol -lRDKitSmilesParse -lRDKitDistGeomHelpers -lRDKitDataStructs -lRDKitRDGeneral -lboost_python -lpython2.7' COOT_BUILD_INFO_STRING='CCP4, Oxfordshire'">
+    <branch repo="mrc_coot"
+            module="source/releases/coot-${version}.tar.gz"
+            checkoutdir="coot-${version}" size="19360553" version="0.8.9.1">
+      <patch file="coot-coot-in.patch" strip="0" />
+      <patch file="coot-syminfo.patch" strip="0" />
+      <patch file="coot-main-title.patch" strip="0"/>
+      <patch file="coot-unfog-bitmap.patch" strip="0"/>
+      <patch file="coot-view.patch" strip="0"/>
+      <patch file="coot-configure.patch" strip="1"/>
+      <patch file="coot-cfc.patch" strip="1"/>
+      <patch file="coot-0.8.9.1-utils.patch" strip="0"/>
+      <patch file="coot-0.8.9.1-dock.patch" strip="0"/>
+      <patch file="coot-configure-png.patch" strip="0"/>
+      <patch file="coot-0.8.9.1-side-chain-flip.patch" strip="0"/>
+    </branch>
+    <dependencies>
+      <dep package="ssm"/>
+      <!-- dep package="ccp4srs"/> coot w/ SRS crashes.
+                       When ready, add -with-ccp4srs-prefix=${prefix}  -->
+      <dep package="mmdb2"/>
+      <dep package="clipper"/>
+      <dep package="monomers"/>
+      <dep package="coot-reference-structures"/>
+      <dep package="curl"/>
+      <dep package="gsl"/>
+      <dep package="goocanvas"/>
+      <dep package="libgnomecanvas"/>
+      <dep package="pygtk"/>
+      <dep package="librsvg"/>
+      <dep package="gtkglext"/>
+      <dep package="guile"/>
+      <dep package="guile-gui"/>
+      <dep package="guile-lib"/>
+      <dep package="freeglut"/>
+      <dep package="libglade"/>
+      <dep package="rdkit"/>
+      <dep package="sqlite3"/>
+    </dependencies>
+  </autotools>
+
+  <!-- non-crystallographic dependencies -->
+
+  <custom id="tcltk84" configure="true" install="${srcdir}/build.sh ${dest}"
+          clean="rm -rf build/" supports-non-srcdir-builds="yes">
+    <branch repo="files" module="tcltk++_${version}.tar.gz"
+            version="8.4.20.3" size="17968604">
+      <patch file="tcltk84-configure.patch" strip="0" />
+    </branch>
+  </custom>
+
+  <repository type="tarball" name="cmake" href="http://www.cmake.org/files/"/>
+  <autotools id="cmake"
+             autogen-template="%(srcdir)s/bootstrap --prefix=%(prefix)s">
+    <branch module="v3.3/cmake-${version}.tar.gz"
+            repo="cmake" version="3.3.2" size="6578184">
+    </branch>
+  </autotools>
+
+  <repository type="tarball" name="pkgconf"
+               href="http://rabbit.dereferenced.org/~nenolod/distfiles/"/>
+  <autotools id="pkgconf" autogenargs="--bindir=${prefix}/devbin">
+    <branch repo="pkgconf" module="pkgconf-${version}.tar.gz"
+            version="0.9.6" size="98886"/>
+  </autotools>
+
+  <repository type="tarball" name="nixos" href="http://nixos.org/releases/"/>
+  <autotools id="patchelf" autogenargs="--bindir=${prefix}/devbin">
+    <branch repo="nixos" module="patchelf/patchelf-0.8/patchelf-0.8.tar.gz"
+            version="0.8" size="144271"/>
+  </autotools>
+
+  <autotools id="libgnurx">
+    <branch repo="files" module="libgnurx-2.5.1.tar.gz"
+            version="2.5.1" size="379950"/>
+  </autotools>
+
+  <repository type="tarball" name="tukaani" href="http://tukaani.org/"/>
+  <autotools id="xz" autogen-sh="configure" autogenargs="--disable-rpath  --bindir=${prefix}/devbin ">
+    <branch repo="tukaani" module="xz/xz-5.0.4.tar.gz"
+            version="5.0.4" size="1281166">
+    </branch>
+  </autotools>
+
+  <!-- we don't need python bindings, but -DRDK_BUILD_PYTHON_WRAPPERS=OFF
+     prevents installing some headers that are included from other headers -->
+  <cmake id="rdkit" cmakeargs="-DRDK_INSTALL_INTREE=OFF -DRDK_INSTALL_STATIC_LIBS=OFF -DRDK_BUILD_SLN_SUPPORT=OFF -DRDK_TEST_MMFF_COMPLIANCE=OFF -DRDK_BUILD_CPP_TESTS=OFF -DBoost_NO_SYSTEM_PATHS=ON -DBOOST_ROOT=${prefix}">
+  <if condition-set="mingw">
+    <cmakeargs value="-DRDK_INSTALL_INTREE=OFF -DRDK_INSTALL_STATIC_LIBS=OFF -DRDK_BUILD_SLN_SUPPORT=OFF -DRDK_TEST_MMFF_COMPLIANCE=OFF -DRDK_BUILD_CPP_TESTS=OFF -DBoost_NO_SYSTEM_PATHS=ON -DBOOST_ROOT=${prefix} -DRDK_USE_BOOST_SERIALIZATION=OFF -DRDK_BUILD_THREADSAFE_SSS=OFF " />
+  </if>
+    <branch module="rdkit/rdkit/archive/Release_${version}.tar.gz"
+            repo="github-zip" version="2017_03_2" size="27110625"
+            checkoutdir="rdkit-Release_${version}">
+      <patch file="rdkit-DebugTrace-mingw.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="boost"/>
+      <dep package="numpy"/>
+      <dep package="sqlite3"/>
+    </dependencies>
+  </cmake>
+
+  <repository type="tarball" name="bitbucket" href="https://bitbucket.org/"/>
+  <autotools id="libgd" autogen-sh="configure"
+             autogenargs="--with-png --with-jpeg --with-freetype --without-tiff --without-xpm --without-vpx --bindir=${prefix}/devbin">
+    <branch repo="bitbucket"
+            module="libgd/gd-libgd/downloads/libgd-${version}.tar.bz2"
+            checkoutdir="libgd-${version}"
+            version="2.1.1" size="2308977">
+    </branch>
+    <dependencies>
+      <dep package="libpng"/>
+      <dep package="libjpeg"/>
+    </dependencies>
+    <after>
+      <dep package="pkgconf"/>
+      <dep package="freetype2"/>
+    </after>
+  </autotools>
+
+  <repository type="tarball" name="sqlite" href="http://sqlite.org/"/>
+  <autotools id="sqlite3"
+     autogenargs="--bindir=${prefix}/devbin CFLAGS=&quot;$CFLAGS -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 -DSQLITE_SECURE_DELETE=1&quot;">
+    <branch repo="sqlite" module="2015/sqlite-autoconf-3081101.tar.gz"
+            version="3.8.11.1" size="2101885"/>
+  </autotools>
+
+  <repository type="tarball" name="python"
+              href="http://www.python.org/ftp/python/"/>
+  <autotools id="python" autogenargs="--bindir=${prefix}/libexec">
+  <if condition-set="ucs4">
+    <autogenargs value="--bindir=${prefix}/libexec --enable-unicode=ucs4 "/>
+  </if>
+    <pkg-config>python-2.7.pc</pkg-config>
+    <branch module="${version}/Python-${version}.tgz"
+            repo="python" version="2.7.15" size="17496336">
+      <patch file="python-2.7.6-osx.patch" strip="0" />
+      <patch file="python-2.7.11-libs-order.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="zlib"/>
+      <dep package="bzip2"/>
+      <dep package="openssl"/>
+      <dep package="sqlite3"/>
+    </dependencies>
+    <suggests>
+      <dep package="readline"/>
+    </suggests>
+  </autotools>
+
+  <cmake id="zlib">
+    <!-- both dynamic and static libraries are built -->
+    <pkg-config>zlib.pc</pkg-config>
+    <branch repo="sf" module="libpng/zlib-1.2.8.tar.gz"
+            version="1.2.8" size="571091"/>
+  </cmake>
+
+  <repository type="tarball" name="sbrabec"
+              href="http://ftp.suse.com/pub/people/sbrabec/"/>
+  <autotools id="bzip2" autogenargs="--bindir=${prefix}/devbin">
+    <pkg-config>bzip2.pc</pkg-config>
+    <!-- using autotool-ized tarball from Suse -->
+    <branch repo="sbrabec" module="bzip2/tarballs/bzip2-1.0.6.0.1.tar.gz"
+            version="1.0.6" size="1071724">
+    </branch>
+  </autotools>
+
+  <repository type="tarball" name="openssl"
+              href="https://www.openssl.org/source/"/>
+  <custom id="openssl"
+          configure="./config --prefix=${prefix} --openssldir=${prefix}/etc/openssl no-hw shared"
+          build="make" clean="make clean"
+          install="touch install_docs; make INSTALL_PREFIX=${destdir} install">
+    <pkg-config>openssl.pc</pkg-config>
+    <branch repo="openssl" module="openssl-${version}.tar.gz"
+            version="1.0.2j" size="5307912">
+     <patch file="openssl-ldflags.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="zlib"/>
+    </dependencies>
+  </custom>
+
+  <repository type="tarball" name="curl" href="http://curl.haxx.se/download/"/>
+  <autotools id="curl" autogenargs="--disable-manual --disable-ldap --bindir=${prefix}/devbin">
+    <pkg-config>libcurl.pc</pkg-config>
+    <branch module="curl-${version}.tar.gz"
+            repo="curl" version="7.37.1" size="4076296">
+     <patch file="curl-configure.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="openssl"/>
+    </dependencies>
+  </autotools>
+
+  <repository type="tarball" name="gnu" href="ftp://ftp.gnu.org/"/>
+  <!-- MINGW=true is a hack to link gsl with gslcblas and avoid problems
+       when programs are linked with -as-needed -->
+  <autotools id="gsl" autogenargs="MINGW=true"
+    autogen-sh="configure" >
+    <pkg-config>gsl.pc</pkg-config>
+    <branch repo="gnu" module="gnu/gsl/gsl-${version}.tar.gz"
+            version="1.16" size="3534080"/>
+  </autotools>
+
+  <autotools id="guile-gtk" autogenargs="--without-glade --without-gtkgl">
+    <branch repo="gnu" module="gnu/guile-gtk/guile-gtk-2.1.tar.gz"
+            version="2.1" size="781985"/>
+    <dependencies>
+      <dep package="guile"/>
+      <dep package="gtk2"/>
+    </dependencies>
+  </autotools>
+
+  <repository type="tarball" name="gnome"
+              href="http://ftp.gnome.org/pub/gnome/sources/"/>
+  <autotools id="libgnomecanvas" autogen-sh="configure" autogenargs="">
+    <pkg-config>libgnomecanvas-2.0.pc</pkg-config>
+    <branch repo="gnome"
+            module="libgnomecanvas/2.30/libgnomecanvas-${version}.tar.bz2"
+            version="2.30.3" size="574139"/>
+    <!--branch repo="gnome"
+            module="libgnomecanvas/2.20/libgnomecanvas-${version}.tar.bz2"
+            version="2.20.1" size="583613"/-->
+    <dependencies>
+      <dep package="gtk2"/>
+      <dep package="libart_lgpl"/>
+      <!--dep package="libglade"/-->
+    </dependencies>
+  </autotools>
+
+  <autotools id="libart_lgpl" autogen-sh="configure" autogenargs="">
+    <branch repo="gnome"
+            module="libart_lgpl/2.3/libart_lgpl-${version}.tar.bz2"
+            version="2.3.21" size="329102"/>
+  </autotools>
+  <autotools id="goocanvas" autogen-sh="configure" autogenargs=""
+             makeargs="SUBDIRS=src"
+             makeinstallargs="SUBDIRS=src install">
+    <pkg-config>goocanvas.pc</pkg-config>
+    <branch repo="gnome" module="goocanvas/1.0/goocanvas-1.0.0.tar.bz2"
+            version="1.0.0" size="570552"/>
+    <dependencies>
+      <dep package="gtk2"/>
+      <dep package="cairo"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="pygtk" autogenargs="--without-glade">
+    <branch repo="gnome" module="pygtk/2.24/pygtk-2.24.0.tar.bz2"
+            version="2.24.0" size="2361097"/>
+    <dependencies>
+      <dep package="pygobject2"/>
+      <dep package="py2cairo"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="pygobject2" autogenargs="--disable-introspection">
+    <branch repo="gnome" module="pygobject/2.28/pygobject-2.28.6.tar.bz2"
+            version="2.28.6" size="888240"/>
+    <dependencies>
+      <dep package="glib"/>
+      <dep package="py2cairo"/>
+    </dependencies>
+  </autotools>
+
+  <repository type="tarball" name="cairo" href="http://cairographics.org/"/>
+  <autotools id="cairo" autogen-sh="configure"
+              autogenargs="--enable-xlib --disable-trace">
+    <pkg-config>cairo.pc</pkg-config>
+    <!--
+    <branch repo="cairo" module="releases/cairo-1.8.10.tar.gz"
+            version="1.8.10" size="7102657"/>
+    -->
+    <branch repo="cairo" module="releases/cairo-1.10.2.tar.gz"
+            version="1.10.2" size="23558405"/>
+    <dependencies>
+      <dep package="pixman"/>
+      <dep package="libpng"/>
+    </dependencies>
+    <after>
+      <dep package="freetype2"/>
+    </after>
+  </autotools>
+
+  <!-- Try disable-mmx due to compile errors on Mac see:
+    https://github.com/Homebrew/legacy-homebrew/issues/41056 -->
+  <autotools id="pixman" autogen-sh="configure" autogenargs="--disable-gtk">
+    <branch repo="cairo" module="releases/pixman-0.34.0.tar.gz"
+            version="0.34.0" size="878784"/>
+    <dependencies>
+    </dependencies>
+  </autotools>
+
+  <autotools id="intltool" autogenargs="--bindir=${prefix}/devbin">
+    <branch repo="lp" module="intltool/trunk/0.50.2/+download/intltool-${version}.tar.gz"
+            version="0.50.2" size="189483">
+      <patch file="intltool-perl-5.22-compatibility.patch" strip="0" />
+    </branch>
+  </autotools>
+
+  <!-- only libintl.dylib is used by glib
+       GCJ=none is set to avoid checking java and OSX popup  -->
+  <autotools id="gettext"
+    autogenargs="--bindir=${prefix}/devbin --disable-java --disable-libasprintf --disable-curses GCJ=none"
+    autogen-sh="configure">
+    <branch repo="gnu" module="pub/gnu/gettext/gettext-${version}.tar.gz"
+            version="0.18.3.2" size="16189249"/>
+  </autotools>
+
+  <autotools id="py2cairo">
+    <branch repo="cairo" module="releases/pycairo-1.2.2.tar.gz"
+            version="1.2.2" size="482417">
+    </branch>
+    <dependencies>
+      <dep package="cairo"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </autotools>
+
+  <autotools id="glib" 
+             autogenargs="--disable-modular-tests --disable-selinux --disable-dtrace ac_cv_func_splice=no"
+             autogen-sh="configure">
+    <pkg-config>glib-2.0.pc</pkg-config>
+    <branch repo="gnome" module="glib/2.34/glib-2.34.3.tar.xz"
+            version="2.34.3" size="6334872">
+      <patch file="glib-osx-gcc-fix.patch" strip="1" />
+    </branch>
+    <dependencies>
+      <dep package="libffi"/>
+      <dep package="gettext"/> <!-- skipped by default on non-OSX -->
+    </dependencies>
+  </autotools>
+
+  <!-- ver. 3.1 has a new problem in libffi.pc.
+       configure patch will stay anyway to avoid ../lib64 -->
+  <repository type="tarball" name="sourceware"
+              href="ftp://sourceware.org/pub/"/>
+  <autotools id="libffi" autogenargs="--enable-portable-binary">
+    <pkg-config>libffi.pc</pkg-config>
+    <branch repo="sourceware" module="libffi/libffi-${version}.tar.gz"
+            version="3.0.13" size="845747">
+      <patch file="libffi-configure.patch" strip="1" />
+      <patch file="libffi_intel_define.patch" strip="0" />
+    </branch>
+  </autotools>
+
+  <!-- pango 1.23 requires fontconfig >= 2.5 (not on CentOS 5) -->
+  <!-- with included-modules there is no need to call pango-querymodules -->
+  <autotools id="pango" autogen-sh="configure"
+             autogenargs="--disable-introspection --with-included-modules">
+    <pkg-config>pango.pc</pkg-config>
+    <branch repo="gnome" module="pango/1.22/pango-1.22.4.tar.bz2"
+            version="1.22.4" size="1496168"/>
+    <dependencies>
+      <dep package="cairo"/>
+      <dep package="glib"/>
+      <!-- <dep package="harfbuzz"/> -->
+    </dependencies>
+  </autotools>
+  <autotools id="pangox" autogen-sh="configure">
+    <pkg-config>pangox.pc</pkg-config>
+    <branch repo="gnome" module="pangox-compat/0.0/pangox-compat-${version}.tar.xz"
+            version="0.0.2" size="267396"/>
+    <dependencies>
+      <dep package="pango"/>
+    </dependencies>
+  </autotools>
+
+  <repository type="tarball" name="freedesktop"
+               href="http://www.freedesktop.org/software/"/>
+  <autotools id="harfbuzz" autogen-sh="configure">
+    <pkg-config>harfbuzz.pc</pkg-config>
+    <branch repo="freedesktop"
+            module="harfbuzz/release/harfbuzz-${version}.tar.bz2"
+            version="0.9.16" size="902208"/>
+    <dependencies>
+      <dep package="glib"/>
+      <dep package="libicu"/>
+    </dependencies>
+  </autotools>
+  <autotools id="fontconfig" autogen-sh="configure" autogenargs="">
+    <pkg-config>fontconfig.pc</pkg-config>
+    <branch repo="freedesktop" module="fontconfig/release/fontconfig-${version}.tar.gz"
+            version="2.10.1" size="1700168"/>
+    <dependencies>
+      <!--<dep package="iconv"/>-->
+      <!--<dep package="expat"/>-->
+    </dependencies>
+  </autotools>
+
+  <repository type="tarball" name="icu"
+              href="http://download.icu-project.org/files/"/>
+  <autotools id="libicu" autogen-sh="source/configure"
+             autogenargs="--disable-tests --disable-samples --disable-rpath">
+    <pkg-config>icu-i18n.pc</pkg-config>
+    <branch repo="icu" module="icu4c/51.1/icu4c-51_1-src.tgz"
+            checkoutdir="libicu-51.1" version="51.1" size="21815174"/>
+  </autotools>
+
+  <autotools id="gdk-pixbuf" autogen-sh="configure"
+             autogenargs="--disable-introspection --without-libtiff --disable-rpath --disable-glibtest --disable-nls --with-included-loaders=png --disable-gio-sniffing">
+    <branch repo="gnome" module="gdk-pixbuf/2.28/gdk-pixbuf-2.28.1.tar.xz"
+            version="2.28.1" size="1191084">
+      <patch file="gdk-pixbuf-hack.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="libpng"/>
+      <dep package="libjpeg"/>
+      <dep package="glib"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="librsvg" autogen-sh="configure"
+             autogenargs="--disable-introspection --disable-gtk-theme --disable-tools --disable-vala">
+    <!--
+    <branch repo="gnome" module="librsvg/2.36/librsvg-${version}.tar.xz"
+            version="2.36.4" size="513028"/>
+    -->
+    <branch repo="gnome" module="librsvg/2.32/librsvg-2.32.1.tar.bz2"
+            version="2.32.1" size="517170"/>
+    <dependencies>
+      <dep package="gdk-pixbuf"/>
+      <dep package="libcroco"/>
+    </dependencies>
+  </autotools>
+  <autotools id="libcroco" autogen-sh="configure"
+             autogenargs="--enable-Bsymbolic=auto">
+    <branch repo="gnome" module="libcroco/0.6/libcroco-0.6.11.tar.xz"
+            version="0.6.11" size="477312"/>
+    <dependencies>
+      <dep package="glib"/>
+      <dep package="libxml2"/>
+      <dep package="pango"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="atk" autogen-sh="configure"
+             autogenargs="--disable-introspection --disable-glibtest">
+    <branch repo="gnome" module="atk/2.8/atk-2.8.0.tar.xz"
+            version="2.8.0" size="634052"/>
+    <dependencies>
+      <dep package="glib"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="gtk2" autogen-sh="configure"
+             autogenargs="--disable-visibility --disable-introspection --disable-glibtest --disable-cups --disable-papi --with-included-immodules">
+    <branch repo="gnome" module="gtk+/2.24/gtk+-${version}.tar.xz"
+            version="2.24.28" size="13354884"/>
+    <dependencies>
+      <dep package="glib"/>
+      <dep package="cairo"/>
+      <dep package="pango"/>
+      <dep package="atk"/>
+      <dep package="gdk-pixbuf"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="gtkglext" autogen-sh="configure"
+             autogenargs="--disable-introspection --disable-glibtest">
+    <branch repo="gnome" module="gtkglext/1.2/gtkglext-1.2.0.tar.bz2"
+            version="1.2.0" size="703821">
+      <patch file="gtkglext-1.2.0-bz677457.diff" strip="1" />
+      <patch file="gtkglext-1.2.0-configure.patch" strip="1" />
+    </branch>
+    <dependencies>
+      <dep package="gtk2"/>
+      <dep package="pangox"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="libglade"
+     autogenargs="--disable-gtktest CPPFLAGS=&quot;$CPPFLAGS -UG_DISABLE_DEPRECATED&quot; --with-xml-catalog=/dev/null">
+    <pkg-config>libglade-2.0.pc</pkg-config>
+    <branch repo="gnome" module="libglade/2.6/libglade-2.6.4.tar.bz2"
+            version="2.6.4" size="356119">
+      <patch file="libglade-2.6.4-configure.patch" strip="1" />
+    </branch>
+    <dependencies>
+      <dep package="gtk2"/>
+      <dep package="gdk-pixbuf"/>
+      <dep package="libxml2"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="guile" autogenargs="--disable-rpath --disable-error-on-warning">
+    <branch repo="gnu" module="gnu/guile/guile-1.8.8.tar.gz"
+            version="1.8.8" size="3956654">
+      <patch file="guile-configure.patch" strip="0"/>
+      <patch file="guile-fink.patch" strip="1"/>
+    </branch>
+    <dependencies>
+      <dep package="libtool"/>
+      <dep package="gmp"/>
+      <dep package="readline"/>
+    </dependencies>
+
+  </autotools>
+  <autotools id="gmp" autogenargs="--disable-assembly">
+    <branch repo="gnu" module="gnu/gmp/gmp-5.1.1.tar.bz2"
+            version="5.1.1" size="2213841"/>
+  </autotools>
+  <autotools id="libtool" autogenargs="">
+    <branch repo="gnu" module="gnu/libtool/libtool-2.4.tar.gz"
+            version="2.4" size="2580417"/>
+  </autotools>
+  <autotools id="readline" autogenargs="">
+    <branch repo="gnu" module="gnu/readline/readline-${version}.tar.gz"
+            version="7.0" size="2910016">
+      <patch file="readline-shobj-conf.patch" strip="0"/>
+    </branch>
+  </autotools>
+
+  <repository type="tarball" name="savannah"
+              href="http://download.savannah.gnu.org/releases/"/>
+  <autotools id="guile-lib">
+    <branch repo="savannah" module="guile-lib/old/guile-lib-${version}.tar.gz"
+            version="0.2.2" size="476723"/>
+    <dependencies>
+      <dep package="guile"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="freetype2"
+    autogen-sh="configure" >
+    <pkg-config>freetype2.pc</pkg-config>
+    <branch repo="sf" module="freetype/freetype-${version}.tar.bz2"
+            version="2.5.5" size="1714529"/>
+  </autotools>
+
+  <repository type="tarball" name="pypi"
+              href="https://pypi.python.org/packages/"/>
+
+  <distutils id="setuptools" distinstallargs="--install-scripts=${prefix}/libexec">
+    <branch repo="pypi" module="41/5f/6da80400340fd48ba4ae1c673be4dc3821ac06cd9821ea60f9c7d32a009f/setuptools-38.4.0.zip"
+            version="38.4.0" size="737603" />
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="pip" distinstallargs="--install-scripts=${prefix}/libexec">
+    <branch repo="pypi" module="11/b6/abcb525026a4be042b486df43905d6893fb04f05aac21c32c638e939e447/pip-9.0.1.tar.gz"
+            version="9.0.1" size="1197370" />
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="numpy">
+    <branch repo="pypi" module="a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-${version}.zip"
+            version="1.12.1">
+      <patch file="numpy-intelcompiler.patch" strip="0"/>
+    </branch>
+    <dependencies>
+      <dep package="setuptools"/>
+      <dep package="lapack"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="scipy">
+    <if condition-set='intel'>
+      <distbuildargs value="--compiler=intelem --fcompiler=intelem" /> 
+    </if>
+    <branch repo="pypi" module="source/s/scipy/scipy-${version}.tar.gz"
+            version="0.16.1" size="12221561" />
+    <dependencies>
+      <dep package="numpy"/>
+    </dependencies>
+  </distutils>
+
+  <distutils id="pandas">
+    <branch repo="pypi" module="11/09/e66eb844daba8680ddff26335d5b4fead77f60f957678243549a8dd4830d/pandas-0.18.1.tar.gz"
+            version="0.18.1" size="7283184" />
+    <dependencies>
+      <dep package="numpy"/>
+      <dep package="python-dateutil"/>
+      <dep package="pytz"/>
+    </dependencies>
+  </distutils>
+
+  <distutils id="seaborn">
+    <branch repo="pypi" module="10/01/dd1c7838cde3b69b247aaeb61016e238cafd8188a276e366d36aa6bcdab4/seaborn-${version}.tar.gz"
+            version="0.8.1" size="178865"/>
+  </distutils>
+
+  <distutils id="requests">
+    <branch repo="pypi" module="49/6f/183063f01aae1e025cf0130772b55848750a2f3a89bfa11b385b35d7329d/requests-${version}.tar.gz"
+            version="2.10.0" size="477617"/>
+  </distutils>
+
+  <distutils id="biopython">
+    <branch repo="pypi" module="source/b/biopython/biopython-${version}.tar.gz"
+            version="1.65" size="12641382" />
+    <dependencies>
+      <dep package="numpy"/>
+    </dependencies>
+  </distutils>
+
+  <distutils id="docutils">
+    <branch repo="pypi" module="source/d/docutils/docutils-${version}.tar.gz"
+            version="0.12" size="1618353" />
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+<!--
+  <distutils id="ipython">
+    <branch repo="pypi" module="i/ipython/ipython-${version}.tar.gz"
+            version="2.1.0" size="3792998" />
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="pyopengl">
+    <branch repo="pypi" module="p/pyopengl/PyOpenGL-${version}.tar.gz"
+            version="3.1.0" size="3792998" />
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="numpydoc">
+    <branch repo="pypi" module="n/numpydoc/numpydoc-${version}.tar.gz"
+            version="0.5" size="3792998" />
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="reportlab">
+    <branch repo="pypi" module="r/reportlab/reportlab-${version}.tar.gz"
+            version="2.6" size="3792998" />
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="send2trash">
+    <branch repo="pypi" module="s/Send2Trash/Send2Trash-${version}.tar.gz"
+            version="1.3.0" size="3792998" />
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="sphinx">
+    <branch repo="pypi" module="s/sphinx/Sphinx-${version}.tar.gz"
+            version="1.2.2" size="3792998" />
+    <dependencies>
+      <dep package="numpydoc"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+-->
+
+  <distutils id="pycrypto">
+    <branch repo="pypi" module="source/p/pycrypto/pycrypto-${version}.tar.gz"
+            version="2.6.1" size="446240" />
+    <dependencies>
+      <dep package="gmp"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="pillow">
+    <branch repo="pypi" module="source/P/Pillow/Pillow-${version}.tar.gz"
+            version="2.6.1" size="7321920" />
+    <dependencies>
+      <dep package="libjpeg"/>
+      <dep package="zlib"/>
+      <dep package="tiff"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="paramiko">
+    <branch repo="pypi" module="source/p/paramiko/paramiko-${version}.tar.gz"
+            version="1.15.2" size="1220578" />
+    <dependencies>
+      <dep package="pycrypto"/>
+    </dependencies>
+  </distutils>
+
+  <distutils id="python-dateutil">
+    <branch repo="pypi" module="source/p/python-dateutil/python-dateutil-2.4.2.tar.gz"
+            version="2.4.2" size="209120" />
+    <dependencies>
+      <dep package="six"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="pytz">
+    <branch repo="pypi" module="source/p/pytz/pytz-2015.7.tar.gz"
+            version="2015.7" size="282002" />
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="six">
+    <branch repo="pypi" module="source/s/six/six-1.10.0.tar.gz"
+            version="1.10.0" size="29630" />
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="pyparsing">
+    <branch repo="pypi" module="source/p/pyparsing/pyparsing-2.0.1.tar.gz"
+            version="2.0.1" size="1129563" />
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="cycler">
+    <branch repo="pypi" module="c2/4b/137dea450d6e1e3d474e1d873cd1d4f7d3beed7e0dc973b06e8e10d32488/cycler-0.10.0.tar.gz" version="0.10.0" size="16553"/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="functools32">
+    <branch repo="pypi" module="c5/60/6ac26ad05857c601308d8fb9e87fa36d0ebf889423f47c3502ef034365db/functools32-3.2.3-2.tar.gz" version="3.2.3" size="31171"/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="matplotlib">
+    <!-- matplotlib 1.4 requires freetype2 2.4+, on RHEL5 it's 2.2.1 -->
+    <branch repo="pypi" module="f5/f0/9da3ef24ea7eb0ccd12430a261b66eca36b924aeef06e17147f9f9d7d310/matplotlib-2.0.2.tar.gz"
+            version="2.0.2" size="53879938">
+    </branch>
+    <dependencies>
+       <dep package="freetype2"/>
+       <dep package="numpy"/>
+       <dep package="python-dateutil"/>
+       <dep package="pyparsing"/>
+       <dep package="libpng"/>
+       <dep package="pyqt4"/>
+       <dep package="cycler"/>
+       <dep package="functools32"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="markupsafe">
+    <branch repo="pypi" module="source/M/MarkupSafe/MarkupSafe-0.23.tar.gz"
+            version="0.23" size="13416" />
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="jinja2">
+    <branch repo="pypi" module="90/61/f820ff0076a2599dd39406dcb858ecb239438c02ce706c8e91131ab9c7f1/Jinja2-2.9.6.tar.gz"
+            version="2.9.6" size="437659" />
+    <dependencies>
+      <dep package="markupsafe"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <repository type="tarball" name="lp" href="https://launchpad.net/"/>
+  <distutils id="bzr" distinstallargs="--install-scripts=${prefix}/libexec">
+    <branch repo="lp" module="bzr/2.6/2.6.0/+download/bzr-2.6.0.tar.gz"
+            version="2.6.0" size="11301124" >
+      <patch file="bzr-6621_6620.patch" strip="0" />
+    </branch>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <repository type="tarball" name="hdf5" href="https://support.hdfgroup.org/ftp/"/>
+  <cmake id="hdf5"
+      cmakeargs="-DBUILD_TESTING=OFF -DHDF5_BUILD_EXAMPLES=OFF -DHDF5_BUILD_TOOLS=OFF -DHDF5_BUILD_CPP_LIB=OFF -DHDF5_BUILD_HL_LIB=ON -DHDF5_INSTALL_DATA_DIR=share/hdf5 -DHDF5_INSTALL_CMAKE_DIR=share/cmake">
+    <branch repo="hdf5"
+            module="HDF5/releases/hdf5-1.10/hdf5-${version}/src/hdf5-${version}.tar.gz"
+            version="1.10.1" size="15052127">
+      <patch file="hdf5-mingw.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="zlib"/>
+    </dependencies>
+  </cmake>
+
+  <distutils id="cython">
+    <if condition-set='darwin'>
+      <distinstallargs value="--prefix=${prefix}/Frameworks/Python.Framework/Versions/2.7" />
+    </if>
+    <branch repo="pypi" module="10/32/21873ff231e069f860098b1602bb9e3ae2806d2f73ba661b5d806f200243/Cython-0.27.1.tar.gz"
+            version="0.27" size="1773306" checkoutdir="Cython-${version}" />
+  </distutils>
+
+  <distutils id="pkgconfig">
+    <branch repo="pypi" module="9d/ba/80910bbed2b4e646a6adab4474d2e506744c260c7002a0e6b41ef8750d8d/pkgconfig-1.2.2.tar.gz"
+            version="1.2.2" size="5305"  />
+    <dependencies>
+      <dep package="nose" /> 
+    </dependencies>
+  </distutils>
+
+  <distutils id="nose">
+    <branch repo="pypi" module="97/48/4ffd60717dd66325e98e185055c0746f4c07808f23884d61dd80c0cfb3b2/nose-1.3.4.tar.gz"
+            version="1.3.4" size=" 277488"  />
+  </distutils>
+
+  <distutils id="h5py" distbuildargs="configure --hdf5=${prefix}/lib ">
+    <branch repo="pypi" module="41/7a/6048de44c62fc5e618178ef9888850c3773a9e4be249e5e673ebce0402ff/h5py-2.7.1.tar.gz"
+            version="2.7.1" size="264225">
+      <patch file="h5py-mingw.patch" strip="1" />
+      <patch file="h5py-shared.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="cython"/>
+      <dep package="hdf5"/>
+      <dep package="numpy"/>
+      <dep package="pkgconfig" />
+      <dep package="six" />
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="ecdsa">
+    <branch repo="pypi" module="source/e/ecdsa/ecdsa-${version}.tar.gz"
+            version="0.13" size="55579"/>
+    <dependencies/>
+  </distutils>
+
+  <repository type="tarball" name="xmlsoft.org" href="ftp://xmlsoft.org/"/>
+  <autotools id="libxml2" autogenargs="--without-python --without-threads --with-zlib --bindir=${prefix}/devbin"
+             autogen-sh="configure" >
+    <pkg-config>libxml-2.0.pc</pkg-config>
+    <branch module="libxml2/libxml2-${version}.tar.gz"
+            repo="xmlsoft.org" version="2.9.6" size="5469624"/>
+    <dependencies>
+      <dep package="zlib"/>
+    </dependencies>
+  </autotools>
+
+  <!-- on Windows patched using: mingw32-libxslt-use-correct-mkdir.patch -->
+  <autotools id="libxslt" autogenargs="--without-python --without-crypto --bindir=${prefix}/devbin">
+    <pkg-config>libxslt.pc</pkg-config>
+    <branch module="libxml2/libxslt-${version}.tar.gz"
+            repo="xmlsoft.org" version="1.1.28" size="3435907"/>
+    <dependencies>
+      <dep package="libxml2"/>
+    </dependencies>
+  </autotools>
+
+  <repository type="tarball" name="gc"
+              href="http://www.hboehm.info/gc/gc_source/"/>
+  <autotools id="gc" autogen-sh="configure"
+             autogenargs="--disable-threads --enable-cplusplus">
+    <branch module="gc-7.2e.tar.gz"
+            repo="gc" version="7.2e" checkoutdir="gc-7.2e" size="1291186"/>
+  </autotools>
+
+  <repository type="tarball" name="lapack_site"
+              href="http://www.netlib.org/lapack/"/>
+  <cmake id="lapack" cmakeargs="-DBUILD_TESTING=OFF">
+    <branch repo="lapack_site" version="3.5.0" module="lapack-${version}.tgz"
+            size="6313139"/>
+  </cmake>
+
+  <!-- compile in-source, otherwise fftw.h in srcdir is not modified by
+       configure; since the source could be already built by different
+       compiler we run make clean first (and -j1 to prevent clean and make
+       running in parallel -->
+  <repository type="tarball" name="fftw_site" href="http://www.fftw.org/"/>
+  <autotools id="fftw2" autogenargs="--enable-float"
+             supports-non-srcdir-builds="no" makeargs="-j1 clean all">
+    <branch repo="fftw_site" module="fftw-2.1.5.tar.gz"
+            version="2.1.5" size="1256888">
+      <patch file="fftw2-configure.patch" strip="0" />
+    </branch>
+  </autotools>
+
+  <repository type="tarball" name="jpeg" href="http://www.ijg.org/files/"/>
+  <autotools id="libjpeg" autogenargs="--bindir=${prefix}/devbin">
+    <branch repo="jpeg" module="jpegsrc.v${version}.tar.gz" version="9a"
+            size="1000034" checkoutdir="jpeg-${version}"/>
+  </autotools>
+
+  <autotools id="libpng" 
+             autogenargs="--bindir=${prefix}/devbin"
+    autogen-sh="configure" >
+    <pkg-config>libpng.pc</pkg-config>
+    <branch repo="sf" module="libpng/libpng-${version}.tar.gz"
+            version="1.6.18" size="1400221"/>
+    <dependencies>
+      <dep package="zlib"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="freeglut" autogenargs="" 
+    autogen-sh="configure">
+    <branch repo="sf" module="freeglut/freeglut-2.8.1.tar.gz"
+            version="2.8.1" size="1005343">
+      <patch file="freeglut-smooth_opengl3.patch" strip="0" />
+      <patch file="freeglut-strokechar.patch" strip="0" />
+    </branch>
+    <dependencies>
+    </dependencies>
+  </autotools>
+
+  <custom id="boost"
+          configure="./bootstrap.sh --with-libraries=serialization,regex,chrono,date_time,filesystem,iostreams,program_options,thread,system,python"
+          build="./b2 -q -d+2 -sBZIP2_INCLUDE=${prefix}/include -sBZIP2_LIBRARY_PATH=${prefix}/lib --layout=system variant=release link=shared linkflags=&quot;${LDFLAGS}&quot; stage"
+          install="./b2 -q -d+2 -sBZIP2_INCLUDE=${prefix}/include -sBZIP2_LIBRARY_PATH=${prefix}/lib --layout=system variant=release link=shared linkflags=&quot;${LDFLAGS}&quot; install --prefix=${dest}"
+          clean="./b2 --clean-all">
+    <if condition-set='darwin'>
+      <configure value="--with-python=${prefix}/Frameworks/Python.framework/Versions/2.7/bin/python "/>
+      <if condition-set='intel'>
+         <configure value=" --with-toolset=intel-darwin"/>
+      </if>
+    </if>
+    <if condition-set='linux'>
+      <if condition-set='intel'>
+         <configure value=" --with-toolset=intel-linux"/>
+      </if>
+    </if>
+    <branch repo="sf" module="boost/boost/1.59.0/boost_1_59_0.tar.gz"
+            version="1.59.0" size="83709983">
+      <patch file="boost-make-setter.patch" strip="0" />
+      <patch file="boost-demangle-intel.patch" strip="1" />
+    </branch>
+    <dependencies>
+      <dep package="zlib"/>
+      <dep package="bzip2"/>
+    </dependencies>
+  </custom>
+
+  <repository type="tarball" name="tiff" href="http://download.osgeo.org/"/>
+  <autotools id="tiff" autogenargs="--disable-lzma"
+             autogen-sh="configure"
+             makeargs="SUBDIRS='port libtiff'"
+             makeinstallargs="SUBDIRS='port libtiff' install">
+   <branch repo="tiff" module="libtiff/tiff-${version}.tar.gz"
+            version="4.0.5" size="2135410"/>
+   <pkg-config>libtiff-4.pc</pkg-config>
+   <dependencies>
+     <dep package="zlib"/>
+     <dep package="libjpeg"/>
+   </dependencies>
+  </autotools>
+
+  <!-- sdr files in the tarball have \r\n line endings and don't work on Unix,
+       they are regenerated after installation (triggers/pixie.trigger).
+       $PIXIEHOME is respected only on OSX, on Linux $SHADERS and $DISPLAY
+       need to be set.
+  -->
+  <autotools id="pixie"
+             autogenargs="--bindir=${prefix}/libexec --disable-selfcontained"
+             supports-non-srcdir-builds="no">
+    <branch repo="sf" module="pixie/Pixie-src-2.2.6.tgz"
+            checkoutdir="Pixie-2.2.6" version="2.2.6" size="9993504">
+      <patch file="pixie-2.2.6-zlib-1.2.5.2.patch" strip="0"/>
+      <patch file="pixie-generated.patch" strip="0"/>
+      <patch file="pixie-c++11.patch" strip="0"/>
+    </branch>
+    <dependencies>
+      <dep package="tiff"/>
+    </dependencies>
+  </autotools>
+
+  <!--
+  on Linux qt4 compilation requires dev files for fontconfig and xrender
+  -->
+  <repository type="tarball" name="qt4"
+              href="http://download.qt.io/archive/qt/"/>
+  <!-- the first lines (before -release) are unix-specific -->
+  <custom id="qt4"
+   configure="${srcdir}/configure -prefix ${prefix} -bindir ${prefix}/devbin
+   -plugindir ${libdir}/qt4/plugins
+   -no-sse3 -no-ssse3 -no-sse4.1 -no-sse4.2 -no-avx
+   -fontconfig -opengl -no-sm -no-xshape -no-xvideo
+   -release -opensource -xmlpatterns
+   -no-3dnow -no-neon
+   -no-qt3support -qt-libmng
+   -no-phonon -no-phonon-backend -no-multimedia
+   -no-audio-backend -webkit -no-declarative -no-declarative-debug
+   -no-scripttools
+   -no-cups -no-openvg
+   -no-s60 -nomake examples -nomake demos -nomake tools -confirm-license"
+   build="${}" install="make INSTALL_ROOT=${destdir} install" clean="${}"
+   supports-non-srcdir-builds="yes">
+    <branch repo="qt4" version="4.8.7" size="241075567"
+            module="4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz">
+    <!--patch for post 10.6 os x-->
+      <patch file="qt4-qpaintengine-mac.patch" strip="0"/>
+      <patch file="qt4-linguist-findmessage-null-check.patch" strip="0"/>
+      <patch file="qt4-qsettings-null.patch" strip="0"/>
+    <!--patch for post 10.12 os x-->
+      <patch file="qt4-versions-without-underscores.patch" strip="0"/>
+      <patch file="qt4-apple-clang.patch" strip="0"/>
+    </branch>
+    <dependencies>
+      <dep package="zlib"/>
+      <dep package="libpng"/>
+      <dep package="libjpeg"/>
+      <dep package="openssl"/>
+      <dep package="tiff"/>
+      <dep package="sqlite3"/>
+    </dependencies>
+    <after> <!-- on Linux it may use glib -->
+      <dep package="glib"/>
+    </after>
+  </custom>
+
+  <custom id="sip" configure="python ${srcdir}/configure.py --bindir=${prefix}/devbin --destdir=${prefix}/lib/python2.7/site-packages --incdir=${prefix}/include --sipdir=${prefix}/share/sip LFLAGS+=&quot;${LDFLAGS}&quot;"
+          build="${}" install="${}" clean="${}"
+          supports-non-srcdir-builds="no">
+    <branch repo="sf" module="pyqt/sip/sip-${version}/sip-${version}.tar.gz"
+            version="4.16.9" size="957858"/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </custom>
+
+  <custom id="pyqt4"
+          configure="python ${srcdir}/configure.py --verbose --confirm-license --no-designer-plugin --no-qsci-api -e QtCore -e QtGui -e QtNetwork -e QtScript -e QtXml -e QtOpenGL -e QtSql -e QtSvg -e QtTest -e QtWebKit -e QtXmlPatterns --bindir=${prefix}/devbin --destdir=${prefix}/lib/python2.7/site-packages --sipdir=${prefix}/share/sip LFLAGS+=&quot;${LDFLAGS}&quot;"
+          build="${}" install="${} INSTALL_ROOT=${destdir}" clean="${}"
+          supports-non-srcdir-builds="yes">
+    <!-- no real differences between PyQt-mac and PyQt-x11, only differences
+         in doc/html/ and in comments in sip/ -->
+    <branch repo="sf"
+            module="pyqt/PyQt4/PyQt-${version}/PyQt-x11-gpl-${version}.tar.gz"
+            version="4.11.4" size="11317088"/>
+    <dependencies>
+      <dep package="sip"/>
+    </dependencies>
+    <after>
+      <dep package="qt4"/>
+    </after>
+  </custom>
+
+  <distutils id="suds">
+    <branch repo="pypi" module="source/s/suds/suds-${version}.tar.gz"
+            version="0.4" size="104013"/>
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="psutil">
+    <branch repo="pypi" module="source/p/psutil/psutil-${version}.tar.gz"
+            version="3.2.2" size="253502"/>
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="lxml">
+    <branch repo="pypi" module="89/dc/ec07a5adf6afb02ad4f5f7e1f7e1a2fc0e3d88ce4fe233ed4b3dabd07cbd/lxml-${version}.tar.gz"
+            version="4.1.0" size="4247102"/>
+    <dependencies>
+      <dep package="libxml2"/>
+      <dep package="libxslt"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <repository type="tarball" name="raster3d"
+              href="http://skuld.bmsc.washington.edu/raster3d/"/>
+  <cmake id="raster3d">
+    <branch repo="raster3d" module="Raster3D_${version}.tar.gz" version="3.0-3">
+      <patch file="raster3d-cmake.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="libgd"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="plplot" cmakeargs="-DENABLE_DYNDRIVERS=0 -DDEFAULT_NO_BINDINGS=1 -DHAVE_QHULL=0 -DWITH_CSA=0 -DDEFAULT_NO_DEVICES=1 -DPLD_png=1 -DCMAKE_INSTALL_LIBDIR=${prefix}/lib">
+    <branch repo="sf"
+            module="plplot/plplot/${version}%20Source/plplot-${version}.tar.gz"
+            version="5.11.0" size="15892751">
+      <patch file="plplot-home-env.patch" strip="0" />
+    </branch>
+    <dependencies>
+      <dep package="libgd"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="macapp">
+    <branch/>
+  </cmake>
+
+  <autotools id="wxwidgets" autogenargs=" --enable-unicode --with-opengl --enable-sound --enable-graphics_ctx --disable-mediactrl --enable-display --enable-geometry --enable-debug_flag --enable-optimise --disable-debugreport --enable-uiactionsim --enable-monolithic " autogen-sh="configure">
+    <if condition-set="intel">
+      <autogenargs value=" --enable-unicode --with-opengl --enable-sound --enable-graphics_ctx --disable-mediactrl --enable-display --enable-geometry --enable-debug_flag --enable-optimise --disable-debugreport --enable-uiactionsim --enable-monolithic --disable-precomp-headers "/>
+    </if>
+    <branch repo="github-zip" module="wxWidgets/wxWidgets/releases/download/v3.0.3/wxWidgets-3.0.3.tar.bz2"
+            version="3.0.3" size="20054446">
+      <patch file="wxwidgets-3.0.3-configure.patch" strip="0"/>
+    </branch>
+    <dependencies>
+      <dep package="gtk2"/>
+    </dependencies>
+  </autotools>
+
+  <custom id="wxpython"
+          build="python ${srcdir}/wxPython/build-wxpython.py  --prefix=${prefix} --wxpy_installdir=${prefix} --installdir=${prefix} --no_wxbuild "
+          install="python ${srcdir}/wxPython/build-wxpython.py --prefix=${prefix} --install --wxpy_installdir=${destdir}${prefix} --no_wxbuild " clean="python ${srcdir}/build-wxpython.py --clean"
+          supports-non-srcdir-builds="no">
+    <if condition-set="darwin">
+      <build value=" --osx_cocoa --extra_setup=INSTALL_MULTIVERSION=0" />
+      <install value=" --osx_cocoa --extra_setup=INSTALL_MULTIVERSION=0" />
+    </if>
+    <branch repo="sf" module="wxpython/wxPython-src-${version}.tar.bz2"
+            version="3.0.2.0" size="58304944">
+       <patch file="wxpython-init.patch" strip="0" />
+       <patch file="wxpython-build.patch" strip="0" />
+       <patch file="wxPython-3.0.2.0-plot.patch" strip="1"/>
+       <patch file="wxpython-version.patch" strip="0"/>
+      </branch>
+    <dependencies>
+      <dep package="wxwidgets"/>
+    </dependencies>
+  </custom>
+
+  <cmake id="probe">
+    <branch repo="github-zip"
+        module="rlabduke/probe/archive/${version}.zip"
+        version="acc7f517c3e3830b2489f71cbc53049399f86909"
+        checkoutdir="probe-${version}">
+      <patch file="probe-cmake.patch" strip="0" />
+    </branch>
+  </cmake>
+
+  <cmake id="reduce">
+    <branch repo="github-zip"
+        module="rlabduke/reduce/archive/${version}.zip"
+        version="9fb41bbc04a2b611832231fcfc7ab8f670083bef"
+        checkoutdir="reduce-${version}">
+      <patch file="reduce-cmake.patch" strip="0" />
+    </branch>
+  </cmake>
+
+<!--
+  <custom id="arcimboldo" install_to="bin/* bin/, arcimboldo lib/py2/">
+    <branch repo="files" version="3.0.1-test1"
+            module="arcimboldo-${version}.tar.gz"/>
+-->
+  <cmake id="arcimboldo">
+    <branch/>
+    <dependencies>
+      <dep package="scipy"/>
+      <dep package="biopython"/>
+      <dep package="matplotlib"/>
+      <dep package="paramiko"/>
+      <dep package="ecdsa"/>
+      <dep package="python-igraph"/>
+      <dep package="progressbar"/>
+      <dep package="scikit-learn"/>
+    </dependencies>
+  </cmake>
+
+  <cmake id="morda-mp">
+    <branch repo="oisin"/>
+    <dependencies>
+    <dep package="psutil"/>
+    </dependencies>
+  </cmake>
+
+  <distutils id="python-igraph">
+    <branch repo="pypi" version="0.7.1.post6" size="377298"
+     module="0f/a0/4e7134f803737aa6eebb4e5250565ace0e2599659e22be7f7eba520ff017/python-igraph-0.7.1.post6.tar.gz"/>
+    <dependencies>
+      <!--<dep package="igraph"/> -->
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="progressbar">
+    <branch repo="pypi" version="3.10.1" size="24090"
+            module="1c/de/a2f5feaf4048c941070e06e5814cb2adad73cdf47778920cb6c762145f17/progressbar2-3.10.1.tar.gz"/>
+    <dependencies>
+      <dep package="pytest-runner"/>
+      <dep package="python-utils"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="pytest-runner">
+    <branch repo="pypi" version="2.8" size="8535"
+            module="46/6c/ff61a9e0d513222afa3529bdb565a465812b7e50b218a5afd705f46b258c/pytest-runner-2.8.tar.gz"/>
+    <dependencies>
+      <dep package="setuptools-scm"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="python-utils">
+    <branch repo="pypi" version="2.0.0" size="5525"
+            module="24/f6/26474b0b52335864cf43a969987b7ab27ee14331def6ec82cbb8263bc937/python-utils-2.0.0.tar.gz"/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="setuptools-scm">
+    <branch repo="pypi" version="1.15.0" size="23677"
+            module="80/b7/31b6ae5fcb188e37f7e31abe75f9be90490a5456a72860fa6e643f8a3cbc/setuptools_scm-1.15.0.tar.gz"/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="scikit-learn">
+    <branch repo="pypi" version="0.17.1" size="7898571"
+            module="0d/1d/9c775f9403565f68aa23f9cef76c817a7115abd7ca1e1c5958a68c49fb6f/scikit-learn-0.17.1.tar.gz"/>
+    <dependencies>
+      <dep package="scipy"/>
+      <dep package="numpy"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="orderedset">
+    <branch repo="pypi" version="2.0.1" size="95084"
+            module="d1/38/22cd720cd990b3154f5792e93965606f61b795c7da5901c7e79468b119e7/orderedset-2.0.1.tar.gz"/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="tabulate">
+    <branch repo="pypi" version="0.8.2" size="45758"
+            module="12/c2/11d6845db5edf1295bc08b2f488cf5937806586afe42936c3f34c097ebdc/tabulate-0.8.2.tar.gz"/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="procrunner">
+    <branch repo="pypi" version="0.7.0" size="17368"
+            module="3a/9b/075583ad4c729a7320129ef05d3b52e8c59644b48c79304403244cce6035/procrunner-0.7.0.tar.gz"/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="enum34">
+    <branch repo="pypi" version="1.1.6" size="40048"
+            module="bf/3e/31d502c25302814a7c2f1d3959d2a3b3f78e509002ba91aea64993936876/enum34-1.1.6.tar.gz" />
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <cmake id="auspex">
+    <branch/>
+    <dependencies>
+      <dep package="numpy"/>
+      <dep package="matplotlib"/>
+      <dep package="swig"/>
+      <dep package="clipper"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </cmake>
+
+  <distutils id="panddas" distbuildargs="--for-ccp4">
+    <branch repo="pypi" version="0.2.12" size="16155918"
+            module="08/47/6cec99420d895ca85ca428b46056f5801e6f99b23ebd5db74d8421be5561/panddas-0.2.12.tar.gz"/>
+    <dependencies>
+      <dep package="pandas"/>
+      <dep package="scipy"/>
+      <dep package="markupsafe"/>
+      <dep package="jinja2"/>
+    </dependencies>
+  </distutils>
+
+  <distutils id="dials-gui" distinstallargs="--install-lib ${prefix}/lib/py2/site-packages --install-data ${prefix}/lib/py2/site-packages ">
+    <branch/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="conkit"
+    distbuildargs="--script-python-path ccp4-python"
+    distinstallargs="--install-scripts ${prefix}/bin --install-lib ${prefix}/lib/py2/site-packages ">
+      <branch repo="github-zip"
+          version="0.8.3"
+          module="rigdenlab/conkit/archive/${version}.zip"
+          checkoutdir="conkit-${version}">
+      </branch>
+    <dependencies>
+      <dep package="numpy"/>
+      <dep package="biopython"/>
+      <dep package="matplotlib"/>
+      <dep package="scipy"/>
+      <dep package="enum34"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="pyjob"
+    distinstallargs="--install-scripts ${prefix}/bin --install-lib ${prefix}/lib/py2/site-packages ">
+      <branch repo="github-zip"
+          version="0.1.5"
+          module="fsimkovic/pyjob/archive/${version}.zip"
+          checkoutdir="pyjob-${version}">
+      </branch>
+    <dependencies>
+      <dep package="numpy"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <cmake id="simbad">
+    <branch repo="github-zip"
+            version="0.1.10"
+            module="rigdenlab/simbad/archive/${version}.zip"
+            checkoutdir="simbad-${version}">
+    </branch>
+    <dependencies>
+      <dep package="numpy"/>
+      <dep package="pandas"/>
+      <dep package="pyjob"/>
+      <dep package="amore-rs"/>
+    </dependencies>
+  </cmake>
+
+  <distutils id="rabdam">
+    <!-- directly from git repo:>
+    <branch repo="github" module="GarmanGroup/RABDAM.git"/>-->
+    <!-- or from github-zip when have release -->
+    <branch repo="github-zip" 
+            version="1.3.0"
+            module="GarmanGroup/RABDAM/archive/v${version}.zip"
+            checkoutdir="rabdam-${version}">
+      <patch file="rabdam.patch" strip="0"/>
+    </branch>
+    <dependencies>
+      <dep package="numpy"/>
+      <dep package="matplotlib"/>
+      <dep package="seaborn"/>
+      <dep package="pandas"/>
+      <dep package="requests"/>
+      <dep package="setuptools"/>
+    </dependencies>
+  </distutils>
+
+  <cmake id="fragon">
+    <branch branch="release-0.1.0" checkoutdir="fragon"/>
+    <dependencies>
+      <dep package="cctbx-phaser"/>
+      <dep package="ccp4-progs"/>
+      <dep package="clipper-python"/>
+    </dependencies>
+  </cmake>
+
+  <repository type="tarball" name="igraph.org" href="http://igraph.org"/>
+  <autotools id="igraph">
+   <branch module="nightly/get/c/igraph-${version}.tar.gz"
+            repo="igraph.org" version="0.7.1" size="2967134"/>
+    <dependencies>
+      <dep package="libxml2"/>
+    </dependencies>
+  </autotools>
+
+  <cmake id="lorestr">
+    <branch/>
+    <dependencies />
+  </cmake>
+
+  <cmake id="pdbdeposition">
+    <branch/>
+    <dependencies />
+  </cmake>
+
+  <cmake id="hdf5_lz4">
+     <branch repo="files" module="hdf5_lz4.tar.gz"
+            size="59270" version="0.2.0">
+        <patch file="hdf5-lz4-cmake.patch" strip="0" />
+     </branch>
+     <dependencies>
+        <dep package="hdf5"/>
+     </dependencies>
+  </cmake>
+
+  <distutils id="bitshuffle" distbuildargs=" build_ext --omp 0 --hdf5dir=${prefix}" distinstallargs=" --prefix=${prefix} --h5plugin --h5plugin-dir=${prefix}/lib/py2/base/lib">
+    <branch repo="files" module="bitshuffle-${version}.tar.gz"
+            size="109776" version="0.3.5">
+        <patch file="bitshuffle-mingw.patch" strip="1" />
+    </branch>
+    <dependencies>
+        <dep package="hdf5"/>
+        <dep package="h5py" />
+        <dep package="numpy"/>
+        <dep package="cython"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <!--<distutils id="bitshuffle">
+    <branch repo="pypi" version="0.3.4" size="109775"
+     module="89/3d/7a158976ef9481ba9d25c9edf1499a9db0d301931b2f7e710a6dfb83b54d/bitshuffle-0.3.4.tar.gz">
+        <patch file="bitshuffle-mingw.patch" strip="1" />
+    </branch>
+    <dependencies>
+      <dep package="hdf5"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>-->
+
+<!--  <repository type="tarball" name="science-annex" href="http://science-annex.org/"/>
+  <autotools id="needle" 
+             supports-non-srcdir-builds="no">
+   <branch repo="science-annex" module="pub/emboss/EMBOSS-${version}.tar.gz"
+            version="6.6.0" size="117962028">
+      <patch file="emboss-makefile.patch" strip="1" />
+   </branch>
+  </autotools> -->
+
+  <!-- Gemmi - for testing only -->
+  <distutils id="gemmi">
+    <branch repo="github" version="0.1.6"
+            module="project-gemmi/gemmi.git"/>
+    <dependencies>
+      <dep package="pybind11"/>
+    </dependencies>
+  </distutils>
+  <distutils id="pybind11">
+    <branch repo="github" version="2.2.3"
+            module="pybind/pybind11.git"/>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <metamodule id="default">
+    <dependencies>
+      <dep package="ccp4-base"/>
+      <dep package="ccp4-lib-data"/>
+      <dep package="mmdb2"/>
+      <dep package="ccif"/>
+      <dep package="libccp4"/>
+      <dep package="ssm"/>
+      <dep package="ccp4srs"/>
+      <dep package="gesamt"/>
+      <dep package="molrep"/>
+      <dep package="sfcheck"/>
+      <dep package="procheck"/>
+      <dep package="scala"/>
+      <dep package="dm21"/>
+      <dep package="refmac"/>
+      <dep package="monomers"/>
+      <dep package="ccp4-progs"/>
+      <dep package="ccp4i"/>
+      <dep package="imosflm"/>
+      <dep package="clipper"/>
+      <dep package="pointless"/>
+      <dep package="aimless"/>
+      <dep package="feckless"/>
+      <dep package="clipper-progs"/>
+      <dep package="cprodrg"/>
+      <dep package="prosmart"/>
+      <dep package="crank2"/>
+      <dep package="examples"/>
+      <dep package="documentation"/>
+      <dep package="ccp4dispatchers"/>
+      <dep package="edstats"/>
+      <dep package="dimple"/>
+      <dep package="mrbump"/>
+      <dep package="tgutils"/>
+      <dep package="spicker"/>
+      <dep package="prelyscar"/>
+      <dep package="theseus"/>
+      <!-- may depend on Tcl -->
+      <dep package="diff-image"/>
+      <dep package="ccp4mapwish"/>
+      <!-- requires javac -->
+      <dep package="jligand"/>
+      <!-- pulls libxml, gc -->
+      <dep package="rapper"/>
+      <!-- requires Qt, OpenGL -->
+      <dep package="pisa"/>
+      <dep package="viewhkl"/>
+      <dep package="qtrview"/>
+      <!-- for now Ample is tested/working only on Unix -->
+      <dep package="conkit"/>
+      <dep package="ample"/>
+      <dep package="raster3d"/>
+      <dep package="xssp"/>
+      <dep package="blend"/>
+      <dep package="acedrg"/>
+      <dep package="libg"/>
+      <dep package="privateer"/>
+      <dep package="clustalw2"/>
+      <dep package="mafft"/>
+      <dep package="hmmer"/>
+      <dep package="ccp4mg"/>
+      <dep package="biopython"/>
+      <dep package="jsrview"/>
+      <dep package="rvapi"/>
+      <dep package="clipper-python"/>
+      <dep package="ccp4srs-python"/>
+      <dep package="ccp4i2"/>
+      <dep package="probe"/>
+      <dep package="reduce"/>
+      <dep package="balbes-pipeline"/>
+      <dep package="arcimboldo"/>
+      <dep package="whatcheck"/>
+      <dep package="pdbdeposition"/>
+      <dep package="lorestr"/>
+      <dep package="auspex"/>
+      <dep package="rabdam"/>
+      <dep package="dials-gui"/>
+    </dependencies>
+  </metamodule>
+
+  <metamodule id="ccp4-linux"> <!-- for Linux binaries  -->
+    <dependencies>
+      <dep package="default"/>
+      <dep package="tcltk84"/>
+      <dep package="hklview"/>
+      <dep package="rotgen"/>
+      <dep package="mosflm"/>
+      <dep package="chooch"/>
+      <dep package="pdb-extract"/>
+      <dep package="panddas"/>
+      <dep package="lorestr"/>
+      <dep package="morda-mp"/>
+      <dep package="simbad"/>
+    </dependencies>
+  </metamodule>
+
+  <metamodule id="ccp4-osx"> <!-- for OSX binaries  -->
+    <dependencies>
+      <dep package="pkgconf"/>
+      <dep package="freetype2"/>
+      <dep package="default"/>
+      <dep package="tcltk84"/>
+      <dep package="hklview"/>
+      <dep package="rotgen"/>
+      <dep package="mosflm"/>
+      <dep package="chooch"/>
+      <dep package="pdb-extract"/>
+      <dep package="panddas"/>
+      <dep package="lorestr"/>
+      <dep package="morda-mp"/>
+      <dep package="simbad"/>
+    </dependencies>
+  </metamodule>
+
+  <metamodule id="coot-osx"> <!-- extra for coot on os x -->
+    <dependencies>
+      <dep package="pkgconf"/>
+      <!--<dep package="freetype2"/>-->
+      <dep package="intltool"/>
+      <!--<dep package="gettext"/>-->
+      <!--<dep package="fontconfig"/>-->
+      <!--<dep package="readline"/>-->
+      <dep package="coot"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+    </after>
+  </metamodule>
+
+  <metamodule id="ccp4-windows"> <!-- for Windows -->
+    <dependencies>
+      <dep package="pkgconf"/>
+      <dep package="libgnurx"/>
+      <dep package="freetype2"/>
+      <dep package="default"/>
+    </dependencies>
+  </metamodule>
+
+  <metamodule id="balbes">
+    <dependencies>
+      <dep package="balbes-pipeline"/>
+      <dep package="balbesdb"/>
+    </dependencies>
+  </metamodule>
+
+  <metamodule id="all-sources"> <!-- sources for ccp4 source bundle -->
+    <dependencies>
+      <dep package="ccp4-linux"/>
+      <dep package="ccp4-windows"/>
+      <dep package="ccp4-osx"/>
+      <dep package="ccp4-deprecated"/>
+      <!-- <dep package="setup"/> -->
+      <dep package="devtools"/>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+      <dep package="pip"/>
+      <dep package="pillow"/>
+      <dep package="wxwidgets"/>
+      <dep package="bzr"/>
+      <dep package="cmake"/>
+      <dep package="coot"/>
+      <dep package="patchelf"/>
+    </dependencies>
+  </metamodule>
+
+  <!-- ccpem specific -->
+
+  <custom id="modeller" install_to="* lib/modeller/">
+    <branch repo="files" module="https://salilab.org/modeller/9.19/modeller-9.19.tar.gz"
+            version="9.19"/>
+  </custom>
+
+  <distutils id="py">
+    <branch repo="pypi" module="68/35/58572278f1c097b403879c1e9369069633d1cbad5239b9057944bb764782/py-1.4.34.tar.gz"
+            version="1.4.34"/>
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+    </after>
+  </distutils>
+
+  <distutils id="pytest">
+    <branch repo="pypi" module="15/c8/6b42bf58f91d72416806472512bb67dabc6edb5a6a8ace29853ff940400a/pytest-3.1.3.tar.gz"
+            version="3.1.3"/>
+    <dependencies>
+      <dep package="py"/>
+      <dep package="python"/>
+    </dependencies>
+  </distutils>
+
+  <distutils id="pytest-xdist">
+    <branch repo="pypi" module="90/03/1d6a1ab90f6cdfc62a36d93fc341db1384a97a24ed9c5ea0e4004d70c8a3/pytest-xdist-1.18.1.tar.gz"
+            version="1.18.1"/>
+    <dependencies>
+      <dep package="pytest"/>
+      <dep package="execnet"/>
+    </dependencies>
+  </distutils>
+
+  <distutils id="mock">
+     <branch repo="pypi" module="0c/53/014354fc93c591ccc4abff12c473ad565a2eb24dcd82490fae33dbf2539f/mock-2.0.0.tar.gz" version="2.0.0"/>
+    <dependencies>
+      <dep package="pbr"/>
+    </dependencies>
+    <after>
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+   <distutils id="apipkg">
+     <branch repo="pypi" module="52/b7/046127821e93d8114338e9431ff896e3cf076e5e510c9ded4cf812af8de5/apipkg-1.2.zip"
+             version="1.2" />
+     <after>
+       <dep package="python"/>
+       <dep package="setuptools"/>
+     </after>
+  </distutils>
+
+  <distutils id="pbr">
+    <branch repo="pypi" module="c6/46/f414e7d9ba9621c8acd3e7a82e08c47e0de34ad3e213c16e458b6c04d432/pbr-4.0.2.tar.gz" version="4.0.2" />
+    <after> 
+      <dep package="python"/>
+      <dep package="setuptools"/>
+    </after>
+  </distutils>
+
+  <distutils id="execnet">
+    <branch repo="pypi" module="eb/ee/43729e7dee8772e69b3b01715ab9742790be2eace2d18cf53d219b9c31f8/execnet-1.4.1.tar.gz"
+            version="1.4.1" />
+    <dependencies/>
+    <after>
+      <dep package="python"/>
+      <dep package="apipkg"/>
+    </after>
+  </distutils>
+
+<!--  <repository type="svn" name="ccpforge"
+              href="https://anonymous@ccpforge.cse.rl.ac.uk/svn/"/> -->
+  <cmake id="ccpem">
+    <branch repo="gitlab" module="ccpem/ccpem"/>
+    <dependencies>
+      <dep package="modeller"/>
+      <dep package="ccp4-base"/>
+      <dep package="libccp4"/>
+      <dep package="ccp4-lib-data"/>
+      <dep package="mmdb2"/>
+      <dep package="clipper"/>
+      <dep package="clipper-progs"/>
+      <dep package="python"/>
+      <dep package="numpy"/>
+      <dep package="scipy"/>
+      <dep package="pandas"/>
+      <dep package="pillow"/>
+      <dep package="conkit"/>
+      <dep package="pytest"/>
+      <dep package="pytest-xdist"/>
+      <dep package="biopython"/>
+      <dep package="matplotlib"/>
+      <dep package="clipper-python"/>
+      <dep package="rvapi"/>
+      <dep package="molrep"/>
+      <dep package="refmac"/>
+      <dep package="sfcheck"/>
+      <dep package="monomers"/>
+      <dep package="ccp4-progs"/>
+      <dep package="mrcfile"/>
+      <dep package="prosmart"/>
+      <dep package="xssp"/>
+      <dep package="libg"/>
+<!--      <dep package="loc-scale"/>-->
+<!--      <dep package="mpi4py"/>-->
+    </dependencies>
+  </cmake>
+
+  <distutils id="mrcfile">
+    <branch repo="github" module="ccpem/mrcfile.git"/>
+    <dependencies>
+      <dep package="numpy"/>
+    </dependencies>
+  </distutils>
+
+<!--  <repository type="tarball" name="git-lab" href="https://git.embl.de"/>-->
+<!--  <distutils id="loc-scale">-->
+<!--    <branch repo="git-lab" module="jakobi/LocScale/raw/master/download/locscale.tgz"-->
+<!--            version="0.1"/>-->
+<!--    <after>-->
+<!--      <dep package="python"/>-->
+<!--      <dep package="numpy"/>-->
+<!--    </after>-->
+<!--  </distutils>-->
+
+
+<!--  <repository type="git" name="git-lab" href="https://git.embl.de"/>-->
+<!--  <distutils id="loc-scale">-->
+<!--    <branch repo="git-lab" module="jakobi/LocScale"/>-->
+<!--    <dependencies>-->
+<!--      <dep package="numpy"/>-->
+<!--    </dependencies>-->
+<!--  </distutils>-->
+
+<!--  <repository type="tarball" name="openmpi" -->
+<!--          href="https://www.open-mpi.org/software/ompi/v3.0/downloads/"/> -->
+<!--    <custom id="openmpi" -->
+<!--      configure="./configure \-\-prefix=${prefix}" -->
+<!--      build="make" clean="make clean" -->
+<!--      install="touch install_docs; make INSTALL_PREFIX=${destdir} install"/> -->
+<!--    <pkg-config>openssl.pc</pkg-config> -->
+<!--    <branch repo="openmpi" module="openmpi-${version}.tar.gz" -->
+<!--            version="3.0.0"> -->
+<!--    </branch> -->
+<!--  </custom> -->
+
+<!--  <distutils id="mpi4py">
+    <branch repo="pypi" module="ee/b8/f443e1de0b6495479fc73c5863b7b5272a4ece5122e3589db6cd3bb57eeb/mpi4py-${version}.tar.gz"
+            version="2.0.0"/>
+    <dependencies>
+      <dep package="openmpi"/>
+      <dep package="numpy"/>
+      <dep package="scipy"/>
+    </dependencies>
+  </distutils> -->
+
+</moduleset>
+<!-- vim:set ts=2 sw=2 expandtab: -->

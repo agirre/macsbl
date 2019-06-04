@@ -7,5 +7,4 @@ alias setup_xtal_devel='source /Users/jon/toolshed/ccp4/ccp4.setup-devel-sh'
 export PYTHONPATH="/usr/local/opt/bzr-fastimport/libexec/vendor/lib/python2.7/site-packages:$PYTHONPATH"
 export CLANG_CXX_LIBRARY='libc++'
 export PATH="/usr/local/opt/tcl-tk/bin:$PATH"
-#export PS1="[\A-\u@\h\w\\$] "
 export PS1="\[\e[37m\][\[\e[m\]\[\e[37m\]\A\[\e[m\]\[\e[37m\]-\[\e[m\]\[\e[37m\]\u\[\e[m\]\[\e[37m\]@\[\e[m\]\[\e[37m\]\h\[\e[m\]\[\e[37m\]\w\[\e[m\]\[\e[37m\]]\[\e[m\] "
