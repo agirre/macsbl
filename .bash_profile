@@ -1,4 +1,7 @@
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+
+export DEVKITPRO="/opt/devkitpro"
+export DEVKITARM="$DEVKITPRO/devkitARM"
+export PATH="$DEVKITARM/bin:$DEVKITPRO/tools/bin:/usr/local/opt/python/libexec/bin:$PATH"
 export CLICOLOR=1
 export LSCOLORS=ExFxBxDxCxegedabagacad
 alias l='ls -lah'
